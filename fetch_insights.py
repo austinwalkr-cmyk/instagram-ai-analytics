@@ -3,9 +3,16 @@ import pandas as pd
 from datetime import datetime
 from instagrapi import Client
 
-# Read credentials from GitHub Secrets
+# Read credentials and 2FA from Secrets
 IG_USERNAME = os.environ.get("IG_USERNAME")
 IG_PASSWORD = os.environ.get("IG_PASSWORD")
+IG_2FA_CODE = os.environ.get("IG_2FA_CODE")
+
+cl = Client()
+if IG_2FA_CODE:
+    cl.login(IG_USERNAME, IG_PASSWORD, verification_code=IG_2FA_CODE)
+else:
+    cl.login(IG_USERNAME, IG_PASSWORD)
 
 # Authenticate with Instagram directly
 cl = Client()
