@@ -3,29 +3,22 @@ import pandas as pd
 from datetime import datetime
 from instagrapi import Client
 
-# Read credentials and 2FA from Secrets
+# Read Session ID from Secrets
+IG_SESSION_ID = os.environ.get("IG_SESSION_ID")
 IG_USERNAME = os.environ.get("IG_USERNAME")
-IG_PASSWORD = os.environ.get("IG_PASSWORD")
-IG_2FA_CODE = os.environ.get("IG_2FA_CODE")
 
+# Authenticate via Session Cookie
 cl = Client()
-if IG_2FA_CODE:
-    cl.login(IG_USERNAME, IG_PASSWORD, verification_code=IG_2FA_CODE)
-else:
-    cl.login(IG_USERNAME, IG_PASSWORD)
+cl.login_by_sessionid(IG_SESSION_ID)
 
-# Authenticate with Instagram directly
-cl = Client()
-cl.login(IG_USERNAME, IG_PASSWORD)
-
-# Pull account insights
+# Fetch account insights
 insights = cl.insights_account()
 
 today_date = datetime.now().strftime("%Y-%m-%d")
 csv_path = "data/sample_data.csv"
 df = pd.read_csv(csv_path)
 
-# Extract metrics
+# Extract metrics safely
 reach_val = insights.get("reach", df["reach"].iloc[-1])
 impressions_val = insights.get("impressions", df["impressions"].iloc[-1])
 views_val = insights.get("profile_views", df["profile_views"].iloc[-1])
