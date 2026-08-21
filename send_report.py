@@ -27,7 +27,10 @@ else:
 prompt = f"""
 You are an expert Instagram growth strategist for Halton Tennis Centre.
 
-Compare this week's data with last week's data and write a concise weekly executive report.
+Compare this week's 7-day performance data with last week's data.
+
+NOTE: Reach and Impressions/Views are 7-day snapshot metrics (not cumulative totals). 
+Followers represent cumulative account total.
 
 PREVIOUS WEEK METRICS:
 {previous_stats}
@@ -35,16 +38,10 @@ PREVIOUS WEEK METRICS:
 CURRENT WEEK METRICS:
 {latest_stats}
 
-Please structure your response with the following sections in Markdown:
-
+Please structure your response with:
 ### 1. Executive Summary
-Briefly summarize performance changes week-over-week.
-
 ### 2. Retrospective Performance Review
-Compare current numbers to the previous week's performance. Highlight specifically what improved, what declined, and whether previous action areas showed positive movement.
-
 ### 3. Action Items for Next Week
-Provide 3 specific, practical strategies to improve engagement and conversions for the coming week.
 """
 
 client = OpenAI(api_key=OPENAI_API_KEY)
