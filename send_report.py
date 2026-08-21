@@ -6,13 +6,11 @@ from email.mime.multipart import MIMEMultipart
 import markdown
 from openai import OpenAI
 
-# Load Secrets
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
 RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL")
 
-# 1. Read the last two weeks of data
 csv_path = "data/sample_data.csv"
 df = pd.read_csv(csv_path)
 
@@ -23,14 +21,13 @@ else:
     previous_stats = "No previous week data available yet."
     latest_stats = df.iloc[-1].to_dict()
 
-# 2. Build Prompt for Retrospective & Fresh Insights
 prompt = f"""
 You are an expert Instagram growth strategist for Halton Tennis Centre.
 
 Compare this week's 7-day performance data with last week's data.
 
-NOTE: Reach and Impressions/Views are 7-day snapshot metrics (not cumulative totals). 
-Followers represent cumulative account total.
+NOTE: Reach and Views are 7-day snapshot metrics (not cumulative totals). 
+Followers represent cumulative account total. Use the term "Views" instead of "Impressions".
 
 PREVIOUS WEEK METRICS:
 {previous_stats}
@@ -51,7 +48,6 @@ response = client.chat.completions.create(
 )
 ai_analysis_md = response.choices[0].message.content
 
-# 3. Convert Markdown to clean HTML for email body
 html_content = markdown.markdown(ai_analysis_md)
 
 email_html = f"""
@@ -67,7 +63,6 @@ email_html = f"""
 </html>
 """
 
-# 4. Send HTML Email
 msg = MIMEMultipart('alternative')
 msg['From'] = SENDER_EMAIL
 msg['To'] = RECIPIENT_EMAIL
@@ -79,4 +74,4 @@ with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
     server.login(SENDER_EMAIL, SENDER_PASSWORD)
     server.sendmail(SENDER_EMAIL, RECIPIENT_EMAIL, msg.as_string())
 
-print("Retrospective email report sent successfully!")
+print("Report sent using 'Views' metric!")
