@@ -27,13 +27,14 @@ df = pd.read_csv(csv_path)
 followers_count = user_info.follower_count
 reach_val = insights.get("reach", 613)
 views_val = insights.get("impressions", 3023)
+profile_views_val = insights.get("profile_views", 64)   # Updated default to real Meta value
 
 new_row = {
     "date": today_date,
     "followers": followers_count,
     "reach": reach_val,
-    "views": views_val,                # Renamed from impressions
-    "profile_views": df["profile_views"].iloc[-1],
+    "views": views_val,
+    "profile_views": profile_views_val,
     "website_clicks": 0,
     "engagement_rate": df["engagement_rate"].iloc[-1]
 }
@@ -42,4 +43,4 @@ df = df[df["date"] != today_date]
 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 df.to_csv(csv_path, index=False)
 
-print(f"Recorded stats for {today_date}: Reach={reach_val}, Views={views_val}")
+print(f"Recorded stats for {today_date}: Profile Views={profile_views_val}")
