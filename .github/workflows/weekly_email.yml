@@ -22,7 +22,7 @@ jobs:
 
       - name: Fetch Live Instagram Data
         env:
-          IG_SESSION_ID: ${{ secrets.IG_SESSION_ID }}
+          IG_SESSION_DATA: ${{ secrets.IG_SESSION_DATA }}
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
         run: python fetch_insights.py
 
