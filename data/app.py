@@ -3,17 +3,16 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-# 1. Page Configuration
+# 1. Page Config
 st.set_page_config(
     page_title="Halton Tennis Centre — Analytics",
     page_icon="🎾",
     layout="wide"
 )
 
-# 2. Halton Brand Styling (Custom CSS)
+# 2. Custom CSS tailored for High-Contrast Light Mode
 st.markdown("""
     <style>
-    /* Main Background & Accent Styling */
     .stApp {
         background-color: #f8fafc;
     }
@@ -21,7 +20,7 @@ st.markdown("""
         background: linear-gradient(135deg, #1a365d 0%, #0d9488 100%);
         padding: 24px;
         border-radius: 12px;
-        color: white;
+        color: #ffffff;
         margin-bottom: 25px;
     }
     .halton-header h1 {
@@ -30,21 +29,29 @@ st.markdown("""
         font-weight: 700;
     }
     .halton-header p {
-        color: #e2e8f0;
+        color: #e2e8f0 !important;
         margin: 5px 0 0 0;
         font-size: 15px;
     }
+    /* Metric Cards Fix */
     div[data-testid="stMetric"] {
-        background-color: #ffffff;
+        background-color: #ffffff !important;
         padding: 16px;
         border-radius: 10px;
         border-left: 5px solid #0d9488;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    div[data-testid="stMetricLabel"] p {
+        color: #475569 !important;
+        font-weight: 600;
+    }
+    div[data-testid="stMetricValue"] div {
+        color: #0f172a !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Custom Header Banner
+# Header Banner
 st.markdown("""
     <div class="halton-header">
         <h1>🎾 Halton Tennis Centre</h1>
@@ -63,11 +70,10 @@ try:
     latest = df.iloc[-1]
     prev = df.iloc[-2] if len(df) >= 2 else latest
 
-    # Brand Colors
+    # Colors
     NAVY = "#1a365d"
     TEAL = "#0d9488"
     GREEN = "#16a34a"
-    LIGHT_BG = "#f1f5f9"
 
     # KPI Summary Row
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
@@ -76,7 +82,6 @@ try:
     kpi3.metric("Weekly Views", f"{int(latest['views']):,}", f"{((latest['views'] - prev['views']) / (prev['views'] or 1))*100:+.1f}%")
     kpi4.metric("Profile Visits", f"{int(latest['profile_views']):,}", f"{((latest['profile_views'] - prev['profile_views']) / (prev['profile_views'] or 1))*100:+.1f}%")
 
-    st.write("")
     st.write("")
 
     # AUDIENCE DEMOGRAPHICS
@@ -96,7 +101,7 @@ try:
             hole=.55,
             marker_colors=[TEAL, NAVY]
         )])
-        fig_gender.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=240, showlegend=True)
+        fig_gender.update_layout(template="plotly_white", margin=dict(t=10, b=10, l=10, r=10), height=250)
         st.plotly_chart(fig_gender, use_container_width=True)
 
     # 2. Age Distribution Bar Chart
@@ -110,10 +115,10 @@ try:
             age_data, x='Audience %', y='Age Bracket', orientation='h',
             color_discrete_sequence=[TEAL]
         )
-        fig_age.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=240)
+        fig_age.update_layout(template="plotly_white", margin=dict(t=10, b=10, l=10, r=10), height=250)
         st.plotly_chart(fig_age, use_container_width=True)
 
-    # 3. Local Towns Map/Chart
+    # 3. Local Towns
     with demo_col3:
         st.subheader("Local Reach")
         loc_data = pd.DataFrame({
@@ -124,12 +129,12 @@ try:
             loc_data, values='Share %', names='Town', 
             color_discrete_sequence=[NAVY, TEAL, GREEN, "#64748b", "#cbd5e1"]
         )
-        fig_loc.update_layout(margin=dict(t=10, b=10, l=10, r=10), height=240)
+        fig_loc.update_layout(template="plotly_white", margin=dict(t=10, b=10, l=10, r=10), height=250)
         st.plotly_chart(fig_loc, use_container_width=True)
 
     st.write("")
 
-    # PERFORMANCE TRENDS SECTION
+    # PERFORMANCE TRENDS
     st.markdown("<h3 style='color: #1a365d;'>📈 Growth & Engagement Trends</h3>", unsafe_allow_html=True)
     
     trend_col1, trend_col2 = st.columns(2)
@@ -141,17 +146,17 @@ try:
             labels={"value": "Count", "date": "Date", "variable": "Metric"},
             color_discrete_map={"reach": TEAL, "views": NAVY}
         )
-        fig_performance.update_layout(height=300, legend=dict(orientation="h", y=1.1, x=0))
+        fig_performance.update_layout(template="plotly_white", height=320, legend=dict(orientation="h", y=1.15, x=0))
         st.plotly_chart(fig_performance, use_container_width=True)
 
     with trend_col2:
         st.subheader("Total Follower Growth")
-        fig_followers = px.area(
-            df, x="date", y="followers",
+        fig_followers = px.line(
+            df, x="date", y="followers", markers=True,
             color_discrete_sequence=[GREEN]
         )
-        fig_followers.update_layout(height=300)
+        fig_followers.update_layout(template="plotly_white", height=320)
         st.plotly_chart(fig_followers, use_container_width=True)
 
 except Exception as e:
-    st.error(f"Unable to load Halton Tennis Centre dashboard: {e}")
+    st.error(f"Unable to load dashboard: {e}")
